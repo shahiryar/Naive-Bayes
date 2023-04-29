@@ -77,17 +77,12 @@ class GaussianNB:
         y_pred : ndarray of shape (n_samples,)
             The predicted class labels.
         """
-        y_pred = np.zeros(X.shape[0])
-        
-        for i, x in enumerate(X):
-            posteriors = []
-            
-            for j, c in enumerate(self.classes):
-                prior = np.log(self.class_priors[j])
-                likelihood = np.sum(np.log(norm.pdf(x, self.mean[j, :], np.sqrt(self.variance[j, :]))))
-                posterior = prior + likelihood
-                posteriors.append(posterior)
-                
-            y_pred[i] = self.classes[np.argmax(posteriors)]
-        
+        posteriors = []
+        for j, c in enumerate(self.classes):
+            prior = np.log(self.class_priors[j])
+            likelihood = np.sum(np.log(norm.pdf(X, self.mean[j, :], np.sqrt(self.variance[j, :]))), axis=1)
+            posterior = prior + likelihood
+            posteriors.append(posterior)
+        posteriors = np.array(posteriors).T
+        y_pred = self.classes[np.argmax(posteriors, axis=1)]
         return y_pred
