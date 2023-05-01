@@ -34,7 +34,7 @@ class GaussianNB:
         self.class_priors = None
         self.mean = None
         self.variance = None
-        
+
     def fit(self, X, y):
         """
         Fit the Gaussian Naive Bayes model to the training data.
@@ -51,18 +51,22 @@ class GaussianNB:
         self : GaussianNB
             The fitted model.
         """
+
         self.classes = np.unique(y)
         n_classes = len(self.classes)
         n_features = X.shape[1]
         self.class_priors = np.zeros(n_classes)
         self.mean = np.zeros((n_classes, n_features))
         self.variance = np.zeros((n_classes, n_features))
+        self.logpdf = np.zeros((n_classes, n_features, X.shape[0]))
         
         for i, c in enumerate(self.classes):
             X_c = X[y == c]
             self.class_priors[i] = X_c.shape[0] / X.shape[0]
             self.mean[i, :] = X_c.mean(axis=0)
             self.variance[i, :] = X_c.var(axis=0)
+            self.logpdf[i, :, :] = norm.logpdf(X.T, self.mean[i, :, None], np.sqrt(self.variance[i, :, None]))
+
         
     def predict(self, X):
         """
@@ -78,14 +82,14 @@ class GaussianNB:
         y_pred : ndarray of shape (n_samples,)
             The predicted class labels.
         """
-        posteriors = []
-        for j, c in enumerate(self.classes):
-            prior = np.log(self.class_priors[j])
-            likelihood = np.sum(np.log(norm.pdf(X, self.mean[j, :], np.sqrt(self.variance[j, :]))), axis=1)
-            posterior = prior + likelihood
-            posteriors.append(posterior)
-        posteriors = np.array(posteriors).T
-        y_pred = self.classes[np.argmax(posteriors, axis=1)]
+        log_likelihoods = np.zeros((X.shape[0], len(self.classes)))
+        
+        for i, c in enumerate(self.classes):
+            prior = np.log(self.class_priors[i])
+            logpdf_c = self.logpdf[i, :, :]
+            log_likelihoods[:, i] = np.sum(logpdf_c * X.T, axis=1) + prior
+        
+        y_pred = self.classes[np.argmax(log_likelihoods, axis=1)]
         return y_pred
     
     def confusion_matrix(X_test, y_test):
