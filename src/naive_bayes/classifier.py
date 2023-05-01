@@ -150,4 +150,61 @@ class GaussianNB:
         """
         y_pred = self.predict(X_test, threshold=threshold)
         return (np.equal(y_pred, y_test).sum()/len(y_test))
+    def vizualize_results(X_test, y_test, method='confusion_matrix'):
+        from sklearn.metrics import confusion_matrix, roc_curve, precision_recall_curve
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        """Visualize the accuracy of the model using various metrics.
+
+        Args:
+            X_test (numpy.array): A numpy array containing the test input data.
+            y_test (numpy.array): A numpy array containing the expected output values for the test data.
+            method (str, optional): A string specifying the visualization method to use. 
+                Default is 'confusion_matrix'. Possible values are 'confusion_matrix', 
+                'roc_curve', and 'precision_recall_curve'.
+
+        Returns:
+            None: This function does not return anything, it only produces visualizations.
+
+        Raises:
+            ValueError: If an invalid method name is provided.
+
+        Examples:
+            >>> # Create and train a logistic regression model
+            >>> model = LogisticRegression()
+            >>> model.fit(X_train, y_train)
+            >>> 
+            >>> # Visualize the accuracy of the model using a confusion matrix
+            >>> model.vizualize_results(X_test, y_test, method='confusion_matrix')
+        """
+        if method == 'confusion_matrix':
+            y_pred = self.predict(X_test)
+            cm = confusion_matrix(y_test, y_pred)
+            sns.heatmap(cm, annot=True, cmap='Blues')
+            plt.title('Confusion Matrix')
+            plt.xlabel('Predicted Label')
+            plt.ylabel('True Label')
+            plt.show()
+            
+        elif method == 'roc_curve':
+            y_pred_prob = self.predict_proba(X_test)[:, 1]
+            fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
+            plt.plot(fpr, tpr)
+            plt.plot([0, 1], [0, 1], linestyle='--')
+            plt.xlabel('False Positive Rate')
+            plt.ylabel('True Positive Rate')
+            plt.title('ROC Curve')
+            plt.show()
+            
+        elif method == 'precision_recall_curve':
+            y_pred_prob = self.predict_proba(X_test)[:, 1]
+            precision, recall, thresholds = precision_recall_curve(y_test, y_pred_prob)
+            plt.plot(recall, precision)
+            plt.xlabel('Recall')
+            plt.ylabel('Precision')
+            plt.title('Precision-Recall Curve')
+            plt.show()
+            
+        else:
+            print('Invalid method name.')
 
