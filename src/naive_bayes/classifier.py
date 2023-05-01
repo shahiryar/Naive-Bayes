@@ -1,3 +1,4 @@
+#TODO: add Classifier for Discreet data
 import numpy as np
 from scipy.stats import norm
 
