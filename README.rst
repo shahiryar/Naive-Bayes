@@ -30,20 +30,45 @@
 |
 
 ===========
-Naive-Bayes
+Naive Bayes Algorithm
 ===========
 
+Naive Bayes is a probabilistic algorithm used for classification tasks. It is based on Bayes' theorem, which describes the probability of an event occurring based on prior knowledge of conditions that might be related to the event. The algorithm is called "naive" because it makes a simplifying assumption that the features used for classification are independent of each other, which is often not the case in real-world scenarios.
 
-    Add a short description here!
+This implementation uses the Gaussian distribution to model the probability density function of each class. The algorithm assumes that the features follow a normal distribution, and estimates the mean and variance for each class based on the training data. Given a new instance, the algorithm calculates the likelihood of each class using the estimated parameters and predicts the class with the highest likelihood.
 
+==============
+Implementation
+==============
 
-A longer description of your project goes here...
+The `GaussianNB` class provides methods for training the model and making predictions. The class has the following attributes:
 
+- `classes`: an array containing the unique class labels observed in the training data.
+- `class_priors`: an array containing the prior probabilities of each class.
+- `mean`: a matrix containing the mean of the feature values for each class.
+- `variance`: a matrix containing the variance of the feature values for each class.
 
-.. _pyscaffold-notes:
+The class has the following methods:
 
-Note
-====
+   `fit(X, y)`
 
-This project has been set up using PyScaffold 4.4.1. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
+This method trains the Gaussian Naive Bayes model using the input data `X` and the corresponding target values `y`. The method estimates the prior probabilities, mean, and variance for each class based on the training data.
+
+   `predict(X)`
+
+This method predicts the class labels of the input data `X` using the fitted model. The method calculates the likelihood of each class for each instance in `X`, and predicts the class with the highest likelihood.
+
+   `confusion_matrix(X_test, y_test)`
+
+This method calculates the confusion matrix for the trained model given the test data and the corresponding true labels. The method returns an array containing the number of instances where the actual class was i and the predicted class was j.
+
+   `accuracy(X_test, y_test, threshold=0.5)`
+
+This method calculates the accuracy of the trained model on the test data. The method returns the number of correct predictions divided by the total number of predictions.
+
+=====================
+Uses and Applications
+=====================
+
+Naive Bayes is a simple yet effective algorithm that can be used for classification tasks. It is often used in text classification tasks such as spam filtering, sentiment analysis, and document classification. It has also been applied to other domains such as image recognition, medical diagnosis, and fraud detection. Naive Bayes is particularly useful in situations where the number of features is large compared to the number of instances, as it can handle high-dimensional data efficiently.
+
